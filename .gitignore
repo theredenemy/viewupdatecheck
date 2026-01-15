@@ -1,0 +1,8 @@
+/.venv
+/checksums.ini
+/load_venv.bat
+/make_venv.bat
+/venv
+/view.ini
+/views
+/__pycache__
