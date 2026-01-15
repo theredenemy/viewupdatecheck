@@ -7,11 +7,14 @@ import traceback
 import time
 import shutil
 import winsound
+import pygame
 
-timeout = 10
+timeout = 30
 config_file = "view.ini"
 maindir = os.getcwd()
 view_dir = "views"
+
+pygame.mixer.init(devicename="CABLE Input (VB-Audio Virtual Cable)")
 
 fastdl = "https://myserver06.ca.eu.org/fastdl/tf2"
 
@@ -81,7 +84,9 @@ def main():
     print(list_len)
     if list_len > 0:
         print("NEW VIEW")
-        winsound.PlaySound("skybox_alert.wav", winsound.SND_FILENAME)
+        pygame.mixer.music.load("skybox_alert.wav")
+        pygame.mixer.music.play()
+        #winsound.PlaySound("skybox_alert.wav", winsound.SND_FILENAME)
         if os.path.isfile("note.cmd"):
             os.system("start cmd /c note.cmd")
         view_data_dir = os.path.join(maindir, view_dir, str(ts))
