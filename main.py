@@ -6,6 +6,7 @@ import dateutil
 import traceback
 import time
 import shutil
+import winsound
 
 timeout = 10
 config_file = "view.ini"
@@ -76,6 +77,9 @@ def main():
         print(list_len)
         if list_len > 0:
             print("NEW VIEW")
+            winsound.PlaySound("skybox_alert.wav", winsound.SND_FILENAME)
+            if os.path.isfile("note.cmd"):
+                os.system("start cmd /c note.cmd")
             view_data_dir = os.path.join(maindir, view_dir, str(ts))
             if not os.path.isdir(view_dir):
                 os.mkdir(view_dir)
