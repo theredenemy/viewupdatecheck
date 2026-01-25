@@ -1,4 +1,4 @@
-
+                                                                                                 
 import requests
 import configHelper
 import os
@@ -8,11 +8,34 @@ import time
 import shutil
 import winsound
 import pygame
+import obsws_python as obs
 
 timeout = 30
 config_file = "view.ini"
 maindir = os.getcwd()
 view_dir = "views"
+while True:
+    try:
+        cl = obs.ReqClient(host="localhost", port=4455)
+        break
+    except Exception as e:
+        print(type(e).__name__)
+        error = traceback.format_exc()
+        print(error)
+scene_name = "VIEW"
+scene_item_name = "VIEW_UPDATE"
+
+def ViewUpdate():
+    resp = cl.get_scene_item_list(scene_name)
+    scene_items = [item['sourceName'] for item in resp.scene_items]
+    if not scene_item_name in scene_items:
+        return False
+        
+    resp = cl.get_scene_item_id(scene_name, scene_item_name)
+    item_id = resp.scene_item_id
+    cl.set_scene_item_enabled(scene_name, item_id, True)
+    time.sleep(1)
+    cl.set_scene_item_enabled(scene_name, item_id, False)
 
 pygame.mixer.init(devicename="CABLE Input (VB-Audio Virtual Cable)")
 
@@ -46,6 +69,7 @@ def get_file_date(url):
 def main():
     updated_files = []
     ts = int(time.time())
+    cl.set_current_program_scene(scene_name)
     print("Wait")
     time.sleep(timeout)
     for material in materials:
@@ -86,7 +110,7 @@ def main():
         print("NEW VIEW")
         pygame.mixer.music.load("skybox_alert.wav")
         pygame.mixer.music.play()
-        #winsound.PlaySound("skybox_alert.wav", winsound.SND_FILENAME)
+        winsound.PlaySound("skybox_alert.wav", winsound.SND_FILENAME)
         if os.path.isfile("note.cmd"):
             os.system("start cmd /c note.cmd")
         view_data_dir = os.path.join(maindir, view_dir, str(ts))
@@ -96,6 +120,10 @@ def main():
             os.mkdir(view_data_dir)
         for file in updated_files:
             shutil.move(file, view_data_dir)
+        
+        for i in range(5):
+            ViewUpdate()
+            time.sleep(1)
     else:
         print("No New View")
 
