@@ -124,10 +124,10 @@ def main():
             os.mkdir(view_data_dir)
         for file in updated_files:
             shutil.move(file, view_data_dir)
-        
-        for i in range(5):
-            ViewUpdate()
-            time.sleep(1)
+        if use_obs:
+            for i in range(5):
+                ViewUpdate()
+                time.sleep(1)
     else:
         print("No New View")
 
