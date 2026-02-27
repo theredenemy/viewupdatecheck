@@ -14,18 +14,22 @@ timeout = 30
 config_file = "view.ini"
 maindir = os.getcwd()
 view_dir = "views"
-while True:
-    try:
-        cl = obs.ReqClient(host="localhost", port=4455)
-        break
-    except Exception as e:
-        print(type(e).__name__)
-        error = traceback.format_exc()
-        print(error)
+use_obs = False
+if use_obs:
+    while True:
+        try:
+            cl = obs.ReqClient(host="localhost", port=4455)
+            break
+        except Exception as e:
+            print(type(e).__name__)
+            error = traceback.format_exc()
+            print(error)
 scene_name = "VIEW"
 scene_item_name = "VIEW_UPDATE"
 
 def ViewUpdate():
+    if not use_obs:
+        return False
     resp = cl.get_scene_item_list(scene_name)
     scene_items = [item['sourceName'] for item in resp.scene_items]
     if not scene_item_name in scene_items:
