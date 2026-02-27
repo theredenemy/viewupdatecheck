@@ -73,7 +73,8 @@ def get_file_date(url):
 def main():
     updated_files = []
     ts = int(time.time())
-    cl.set_current_program_scene(scene_name)
+    if use_obs:
+        cl.set_current_program_scene(scene_name)
     print("Wait")
     time.sleep(timeout)
     for material in materials:
