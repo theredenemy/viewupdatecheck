@@ -9,11 +9,14 @@ import shutil
 import winsound
 import pygame
 import obsws_python as obs
+import threading
 
-timeout = 30
+timeout = 10
 config_file = "view.ini"
 maindir = os.getcwd()
 view_dir = "views"
+updated_files = []
+threads = []
 use_obs = False
 if use_obs:
     while True:
@@ -53,7 +56,20 @@ def download_file(url, filename):
     file_data = requests.get(url, allow_redirects=True)
     open(filename, 'wb').write(file_data.content)
     return filename
-
+def check_file_url(url, filename):
+    last_updated = configHelper.read_config(config_file, filename.replace('.', ''), "last_updated", is_float=True)
+    print(f"Checking: {url}")
+    file_date = get_file_date(url)
+    if not file_date:
+        return
+    if not file_date == last_updated:
+        print(f"UPDATE: {url}")
+        updated_files.append(filename)
+        download_file(url, filename)
+        configHelper.set_config(config_file, filename.replace('.', ''), "last_updated", file_date)
+    else:
+        print(f"OK: {url}")
+    return
 def get_file_date(url):
     try:
         header = requests.head(url)
@@ -72,6 +88,7 @@ def get_file_date(url):
 
 def main():
     updated_files = []
+    threads = []
     ts = int(time.time())
     if use_obs:
         cl.set_current_program_scene(scene_name)
@@ -79,34 +96,19 @@ def main():
     time.sleep(timeout)
     for material in materials:
         url = f"{fastdl}/materials/{material}"
-        last_updated = configHelper.read_config(config_file, material.replace('.', ''), "last_updated", is_float=True)
-        print(f"Checking: {url}")
-        file_date = get_file_date(url)
-        if not file_date:
-            continue
-        if not file_date == last_updated:
-            print(f"UPDATE: {url}")
-            updated_files.append(material)
-            download_file(url, material)
-            configHelper.set_config(config_file, material.replace('.', ''), "last_updated", file_date)
-        else:
-            print(f"OK: {url}")
-        time.sleep(1)
+        t = threading.Thread(target=check_file_url, kwargs={"url": url, "filename": material})
+        threads.append(t)
+        
     for sound in sounds:
         url = f"{fastdl}/sound/{sound}"
-        last_updated = configHelper.read_config(config_file, sound.replace('.', ''), "last_updated", is_float=True)
-        print(f"Checking: {url}")
-        file_date = get_file_date(url)
-        if not file_date:
-            continue
-        if not file_date == last_updated:
-            print(f"UPDATE: {url}")
-            updated_files.append(sound)
-            download_file(url, sound)
-            configHelper.set_config(config_file, sound.replace('.', ''), "last_updated", file_date)
-        else:
-            print(f"OK: {url}")
-        time.sleep(1)
+        t = threading.Thread(target=check_file_url, kwargs={"url": url, "filename": sound})
+        threads.append(t)
+    for t in threads:
+        t.start()
+    for t in threads:
+        t.join()
+        threads.remove(t)
+    time.sleep(1)
     list_len = 0
     for item in updated_files:
         list_len += 1
