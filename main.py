@@ -57,6 +57,7 @@ def download_file(url, filename):
     open(filename, 'wb').write(file_data.content)
     return filename
 def check_file_url(url, filename):
+    global updated_files
     last_updated = configHelper.read_config(config_file, filename.replace('.', ''), "last_updated", is_float=True)
     print(f"Checking: {url}")
     file_date = get_file_date(url)
@@ -87,7 +88,7 @@ def get_file_date(url):
         return False
 
 def main():
-    updated_files = []
+    
     threads = []
     ts = int(time.time())
     if use_obs:
@@ -137,6 +138,7 @@ def main():
 if __name__ == '__main__':
     while True:
         try:
+            updated_files = []
             main()
         except Exception as e:
             print(type(e).__name__)
