@@ -17,17 +17,15 @@ maindir = os.getcwd()
 view_dir = "views"
 updated_files = []
 threads = []
-use_obs = False
+use_obs = True
+
 if use_obs:
-    while True:
-        try:
-            cl = obs.ReqClient(host="localhost", port=4455)
-            break
-        except Exception as e:
-            print(type(e).__name__)
-            error = traceback.format_exc()
-            print(error)
-scene_name = "VIEW"
+    try:
+        cl = obs.ReqClient(host="localhost", port=4455)
+        use_obs = True
+    except ConnectionRefusedError:
+        use_obs = False
+scene_name = None
 scene_item_name = "VIEW_UPDATE"
 
 def ViewUpdate():
@@ -92,7 +90,7 @@ def main():
     threads = []
     ts = int(time.time())
     if use_obs:
-        cl.set_current_program_scene(scene_name)
+        scene_name = cl.get_current_program_scene().scene_name
     print("Wait")
     time.sleep(timeout)
     for material in materials:
