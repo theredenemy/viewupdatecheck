@@ -1,7 +1,7 @@
 import configparser
 import os
 
-def read_config(configfile, section, option, default_value=0, is_int=False, is_float=False):
+def read_config(configfile, section, option, default_value=0, is_int=False, is_float=False, is_bool=False):
     config = configparser.ConfigParser()
     if os.path.isfile(configfile) == False:
         config.add_section(section)
@@ -20,6 +20,8 @@ def read_config(configfile, section, option, default_value=0, is_int=False, is_f
         value = config.getint(section, option)
     elif is_float == True:
         value = config.getfloat(section, option)
+    elif is_bool == True:
+        value = config.getboolean(section, option)
     else:
         value = config[section][option]
     

@@ -12,12 +12,13 @@ import obsws_python as obs
 import threading
 
 timeout = 10
-config_file = "view.ini"
+view_times = "view.ini"
+config_file = "config.ini"
 maindir = os.getcwd()
 view_dir = "views"
 updated_files = []
 threads = []
-use_obs = True
+use_obs = configHelper.read_config(config_file, "Config", "use_obs", False, is_bool=True)
 
 if use_obs:
     try:
@@ -44,7 +45,7 @@ def ViewUpdate():
 
 pygame.mixer.init(devicename="CABLE Input (VB-Audio Virtual Cable)")
 
-fastdl = "https://myserver06.ca.eu.org/fastdl/tf2"
+fastdl = configHelper.read_config(config_file, "Config", "fastdl", "https://myserver06.ca.eu.org/fastdl/tf2")
 
 materials = ['view.vtf', 'view.vmt']
 sounds = ['view.wav']
@@ -56,7 +57,7 @@ def download_file(url, filename):
     return filename
 def check_file_url(url, filename):
     global updated_files
-    last_updated = configHelper.read_config(config_file, filename.replace('.', ''), "last_updated", is_float=True)
+    last_updated = configHelper.read_config(view_times, filename.replace('.', ''), "last_updated", is_float=True)
     print(f"Checking: {url}")
     file_date = get_file_date(url)
     if not file_date:
@@ -65,7 +66,7 @@ def check_file_url(url, filename):
         print(f"UPDATE: {url}")
         updated_files.append(filename)
         download_file(url, filename)
-        configHelper.set_config(config_file, filename.replace('.', ''), "last_updated", file_date)
+        configHelper.set_config(view_times, filename.replace('.', ''), "last_updated", file_date)
     else:
         print(f"OK: {url}")
     return
