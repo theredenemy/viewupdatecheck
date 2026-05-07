@@ -87,7 +87,7 @@ def get_file_date(url):
         return False
 
 def main():
-    
+    global scene_name
     threads = []
     ts = int(time.time())
     if use_obs:
