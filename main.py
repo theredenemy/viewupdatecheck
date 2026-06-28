@@ -19,6 +19,8 @@ view_dir = "views"
 updated_files = []
 threads = []
 use_obs = configHelper.read_config(config_file, "Config", "use_obs", False, is_bool=True)
+use_audio_device = configHelper.read_config(config_file, "Config", "use_audio_device", False, is_bool=True)
+audio_device = configHelper.read_config(config_file, "Config", "audio_device", "CABLE Input (VB-Audio Virtual Cable)")
 
 if use_obs:
     try:
@@ -42,8 +44,8 @@ def ViewUpdate():
     cl.set_scene_item_enabled(scene_name, item_id, True)
     time.sleep(1)
     cl.set_scene_item_enabled(scene_name, item_id, False)
-
-pygame.mixer.init(devicename="CABLE Input (VB-Audio Virtual Cable)")
+if use_audio_device:
+    pygame.mixer.init(devicename=audio_device)
 
 fastdl = configHelper.read_config(config_file, "Config", "fastdl", "https://myserver06.ca.eu.org/fastdl/tf2")
 
@@ -115,8 +117,9 @@ def main():
     print(list_len)
     if list_len > 0:
         print("NEW VIEW")
-        pygame.mixer.music.load("skybox_alert.wav")
-        pygame.mixer.music.play()
+        if use_audio_device:
+            pygame.mixer.music.load("skybox_alert.wav")
+            pygame.mixer.music.play()
         winsound.PlaySound("skybox_alert.wav", winsound.SND_FILENAME)
         if os.path.isfile("note.cmd"):
             os.system("start cmd /c note.cmd")
