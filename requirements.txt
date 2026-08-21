@@ -8,3 +8,5 @@ requests==2.32.5
 six==1.17.0
 urllib3==2.6.3
 websocket-client==1.9.0
+srctools==2.7.0
+pillow==12.3.0
