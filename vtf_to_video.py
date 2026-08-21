@@ -39,4 +39,4 @@ def vtf_to_video(input_vtf, input_vmt, input_wav, output):
             img = vtf_frame.to_PIL().convert('RGB')
             save_img_path = os.path.join(frames_dir, f"{Path(input_vtf).stem}_{i:04d}.png")
             img.save(save_img_path)
-    os.system(f'ffmpeg -framerate {fps} -i {os.path.join(frames_dir, f"{Path(input_vtf).stem}_%04d.png")} -i {input_wav} -filter:a "atempo=2.0" {output}')
+    os.system(f'ffmpeg -framerate {fps} -i {os.path.join(frames_dir, f"{Path(input_vtf).stem}_%04d.png")} -i {input_wav} {output}')
